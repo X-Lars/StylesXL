@@ -1,0 +1,46 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:xl="clr-namespace:StylesXL">
+
+    <ResourceDictionary.MergedDictionaries>
+
+        <!-- Merges the specified dictionaries containing custom control colors into Skins\Dark.xaml -->
+        <ResourceDictionary Source="pack://application:,,,/StylesXL;Component/Resources/Colors.xaml"/>
+
+    </ResourceDictionary.MergedDictionaries>
+
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, TestBrush}" Color="DarkMagenta"/>
+
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, AppBrush}" Color="#14214D"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, AppBorderBrush}" Color="{StaticResource DefaultAppBorder}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, AppBorderSelectedBrush}" Color="{StaticResource DefaultAppBorderActive}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, AppHeaderBrush}" Color="{StaticResource DefaultAppHeader}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, AppHeaderSelectedBrush}" Color="{StaticResource DefaultAppHeaderActive}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, AppWorkspaceBrush}" Color="#404968"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, AppAccentBrush}" Color="#d69f3a"/>
+
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, ControlBrush}" Color="#14214D" />
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, ControlHighlightBrush}" Color="{StaticResource DefaultControlActive}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, ControlDisabledBrush}" Color="{StaticResource DefaultControlDisabled}" />
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, ControlPressedBrush}" Color="{StaticResource DefaultControlPressed}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, ControlSelectedBrush}" Color="{StaticResource DefaultControlSelected}"/>
+
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, HeaderBrush}" Color="#252526" />
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, HeaderHighlightBrush}" Color="{StaticResource DefaultControlActive}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, HeaderDisabledBrush}" Color="{StaticResource DefaultControlDisabled}" />
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, HeaderPressedBrush}" Color="{StaticResource DefaultControlPressed}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, HeaderSelectedBrush}" Color="{StaticResource DefaultControlSelected}"/>
+
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, BorderBrush}" Color="#3F3F46" />
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, BorderHighlightBrush}" Color="{StaticResource DefaultControlBorderActive}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, BorderDisabledBrush}" Color="#999999" />
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, BorderPressedBrush}" Color="{StaticResource DefaultControlBorderPressed}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, BorderSelectedBrush}" Color="{StaticResource DefaultControlSelected}"/>
+
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, TextBrush}" Color="#cde7fe" />
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, TextDisabledBrush}" Color="#a4b4c3"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, TextSelectedBrush}" Color="#cde7fe"/>
+
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, TintBrush}" Color="{StaticResource DefaultShadow}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, HighlightBrush}" Color="{StaticResource DefaultHighlight}"/>
+</ResourceDictionary>
