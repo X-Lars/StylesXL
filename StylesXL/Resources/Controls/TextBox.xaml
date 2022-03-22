@@ -1,0 +1,55 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:xl="clr-namespace:StylesXL">
+
+    
+    <Style x:Key="{ComponentResourceKey xl:Styles, TextBox}" TargetType="{x:Type TextBox}">
+        <Setter Property="Background" Value="{xl:StyleManager BrushID=App}"/>
+        <Setter Property="BorderBrush" Value="{xl:StyleManager BrushID=Border}"/>
+        <Setter Property="Foreground" Value="{xl:StyleManager BrushID=Text}"/>
+        
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="MinWidth" Value="120" />
+        <Setter Property="MinHeight" Value="20" />
+        <Setter Property="AllowDrop" Value="true" />
+        
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                    
+                    <Border Name="Border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{xl:StyleManager LayoutID=BorderThickness}"
+                            CornerRadius="{xl:StyleManager LayoutID=CornerRadius}"
+                            Padding="2">
+
+                        <ScrollViewer x:Name="PART_ContentHost"
+                                      Margin="0"/>
+                        
+                    </Border>
+                    
+                    <ControlTemplate.Triggers>
+                        
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{xl:StyleManager BrushID=TextDisabled}"/>
+                        </Trigger>
+
+                        <Trigger Property="IsReadOnly" Value="True">
+                            <Setter Property="Foreground" Value="{xl:StyleManager BrushID=TextDisabled}"/>
+                        </Trigger>
+
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" Value="{xl:StyleManager BrushID=BorderHighlight}"/>
+                        </Trigger>
+                        
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

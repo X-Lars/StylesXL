@@ -5,7 +5,7 @@
     <ResourceDictionary.MergedDictionaries>
 
         <!-- Merges the specified dictionaries containing custom control colors into Skins\Dark.xaml -->
-        <ResourceDictionary Source="pack://application:,,,/StylesXL;Component/Resources/Colors.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/StylesXL;Component/Resources/Colors/Generic.xaml"/>
 
     </ResourceDictionary.MergedDictionaries>
 
@@ -20,7 +20,7 @@
     <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, AppAccentBrush}" Color="DodgerBlue"/>
 
     <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, ControlBrush}" Color="#2D2D30" />
-    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, ControlHighlightBrush}" Color="{StaticResource DefaultControlActive}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, ControlHighlightBrush}" Color="DeepPink"/>
     <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, ControlDisabledBrush}" Color="{StaticResource DefaultControlDisabled}" />
     <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, ControlPressedBrush}" Color="{StaticResource DefaultControlPressed}"/>
     <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, ControlSelectedBrush}" Color="DeepPink"/>
@@ -41,6 +41,7 @@
     <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, TextDisabledBrush}" Color="#999999"/>
     <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, TextSelectedBrush}" Color="#F1F1F1"/>
 
-    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, TintBrush}" Color="{StaticResource DefaultShadow}"/>
-    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, HighlightBrush}" Color="{StaticResource DefaultHighlight}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, TintBrush}" Color="{StaticResource DefaultHighlight}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, HighlightBrush}" Color="{StaticResource DefaultShadow}"/>
+    <SolidColorBrush x:Key="{ComponentResourceKey xl:Styles, TransparentBrush}"       Color="Transparent"/>
 </ResourceDictionary>

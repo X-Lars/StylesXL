@@ -2,38 +2,36 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
-using System.Diagnostics;
-//using ToolsXL.Config;
 
 namespace StylesXL
 {
     /// <summary>
-    /// Manages the appearance of the custom controls at runtime.
+    /// Manages the appearance of an application's controls.
     /// </summary>
-    public class StyleManager : MarkupExtension
+    public class StyleManager : DynamicResourceExtension
     {
         #region Constants
 
         /// <summary>
         /// Defines the base uri for all resources.
         /// </summary>
-        private const string _BaseUri = "/StylesXL;Component/Resources/";
+        private const string _BaseURI = "/StylesXL;Component/Resources/";
 
         /// <summary>
         /// Defines the uri for all appearances.
         /// </summary>
         /// <remarks><i>Use a string format to inject the filename. <code>string.format(_AppearanceUri, <filename>)</code></i></remarks>
-        private const string _AppearancesUri = _BaseUri + "Appearance/{0}.xaml";
+        private const string _AppearancesURI = _BaseURI + "Layouts/{0}.xaml";
 
         /// <summary>
         /// Defines the uri for all styles.
         /// </summary>
         /// <remarks><i>Use a string format to inject the filename. <code>string.format(_AppearanceUri, <filename>)</code></i></remarks>
-        private const string _StylesUri = _BaseUri + "Style/{0}.xaml";
+        private const string _ThemesURI = _BaseURI + "Themes/{0}.xaml";
 
         #endregion
 
@@ -42,326 +40,334 @@ namespace StylesXL
         /// <summary>
         /// Stores the applied style.
         /// </summary>
-        private static ControlStyle _Style = ControlStyle.Default;
+        private static XLThemes _Theme = XLThemes.Default;
 
         /// <summary>
-        /// Stores the applied appearance.
+        /// Stores the applied layouts.
         /// </summary>
-        private static ControlAppearance _Appearance = ControlAppearance.Default;
+        private static XLLayoutOptions _Layout = XLLayoutOptions.Default;
 
         /// <summary>
-        /// Stores the <see cref="ResourceDictionary"/> containing the dictionary keys for the current style.
+        /// Stores the current theme's resource dictionary.
         /// </summary>
-        private static readonly ResourceDictionary _CurrentStyle = new();
+        private static readonly ResourceDictionary _CurrentTheme = new();
 
         /// <summary>
-        /// Stores the list of resource dictionaries containing the dictonary keys for all current appearances.
+        /// Stores a list of resource dictionaries for the currently selected layout options.
         /// </summary>
-        private static readonly List<ResourceDictionary> _CurrentAppearances = new();
+        private static readonly List<ResourceDictionary> _CurrentLayoutOptions = new();
+
+        /// <summary>
+        /// Stores the instance's style property type used for XAML property type validation.
+        /// </summary>
+        private Type _StylePropertyType;
+
+        /// <summary>
+        /// Stores the instance's style resource ID.
+        /// </summary>
+        private string _StyleResourceID;
 
         #endregion
 
         #region Events
 
         /// <summary>
-        /// Defines the event to raise when the applied style is changed.
+        /// Event to raise when a style is changed.
         /// </summary>
         public static event EventHandler StyleChanged;
-
-        /// <summary>
-        /// Defines the event to raise when the applied appearance is changed.
-        /// </summary>
-        public static event EventHandler AppearanceChanged;
 
         #endregion
 
         #region Constructor
 
         /// <summary>
-        /// Static constructor called before the instance of <see cref="StyleManager"/> is created.
+        /// Creates the static <see cref="StyleManager"/> instance.
         /// </summary>
-        static StyleManager()
+        static StyleManager() 
         {
-            //Style = ControlStyle.Default;
-            //if (!IsInDesignMode)
-            //    Config<StyleConfig>.Print();
-        }
-
-        // TODO: Remove or use for binding styles
-        public StyleManager() 
-        {
-            //Style = ControlStyle.Default;
+            ApplyTheme();
+            ApplyLayoutOptions();
         }
 
         #endregion
 
         #region Properties
 
+        public IValueConverter Converter { get; set; }
+        public object ConverterParameter { get; set; }
         /// <summary>
-        /// Gets or sets the style to apply.
+        /// Gets or sets the applied theme.
         /// </summary>
-        public static ControlStyle Style
+        public static XLThemes Theme
         {
-            get { return _Style; }
+            get => _Theme;
             set
             {
-                if (_Style != value)
+                if (_Theme != value)
                 {
-                    _Style = value;
-                    ApplySkinStyle();
+                    _Theme = value;
+                    ApplyTheme();
                 }
             }
         }
 
         /// <summary>
-        /// Gets or sets the appearance to apply.
+        /// Gets or sets the applied layouts.
         /// </summary>
-        public static ControlAppearance Appearance
+        public static XLLayoutOptions Layouts
         {
-            get { return _Appearance; }
+            get => _Layout;
             set
             {
-                if (_Appearance != value)
+                if (_Layout != value)
                 {
-                    _Appearance = value;
-                    InvalidateAppearance();
-                    ApplyAppearance();
+                    _Layout = value;
+                    ApplyLayoutOptions();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Sets the dynamice resource's <see cref="ResourceKey"/>.
+        /// </summary>
+        [ConstructorArgument("resourceKey")]
+        public XLBrushes BrushID
+        {
+            set
+            {
+                _StylePropertyType = typeof(Brush);
+                _StyleResourceID = $"{value}Brush";
+
+                ResourceKey = new ComponentResourceKey(typeof(Styles), _StyleResourceID);
+            }
+        }
+
+        /// <summary>
+        /// Sets the dynamic resource's <see cref="ResourceKey"/>.
+        /// </summary>
+        [ConstructorArgument("resourceKey")]
+        public XLLayout LayoutID
+        {
+            set
+            {
+                _StyleResourceID = $"{value}";
+
+                switch(value)
+                {
+                    case XLLayout.BorderThickness:
+                    case XLLayout.Margin:
+                    case XLLayout.Padding:
+                        _StylePropertyType = typeof(Thickness);
+                        break;
+                    case XLLayout.CornerRadius:
+                        _StylePropertyType = typeof(CornerRadius);
+                        break;
+                }
+
+                ResourceKey = new ComponentResourceKey(typeof(Styles), _StyleResourceID);
             }
         }
 
         /// <summary>
         /// Gets wheter the application is in designmode.
         /// </summary>
-        private static bool IsInDesignMode
-        {
-            get { return DesignerProperties.GetIsInDesignMode(new DependencyObject()); }
-        }
-
-        /// <summary>
-        /// Gets or sets the key used by the <see cref="ProvideValue(IServiceProvider)"/> method.
-        /// </summary>
-        public string Key { get; set; }
-
-        #region Properties: Appearance
-
-        public static CornerRadius CornerRadius 
-        { 
-            get
-            {
-                return (CornerRadius)GetStyleValue(Layout.CornerRadius);
-            }
-        }
-
-        #endregion
+        private static bool IsInDesignMode => DesignerProperties.GetIsInDesignMode(new DependencyObject());
 
         #endregion
 
         #region Methods
 
         /// <summary>
-        /// Constructs and initializes the manager is constructed.
+        /// Initializes the static <see cref="StyleManager"/> instance.
         /// </summary>
-        public static void Initialize() { }
+        public static void Initialize() {}
 
         /// <summary>
-        /// Gets the value of the specified component resource from the current application runtime resources.
+        /// Gets a style resource with given ID from the current application runtime resources.
         /// </summary>
-        /// <param name="ID">A <see cref="string"/> specifying the component resource key ID.</param>
-        /// <returns>A <see cref="object"/> containing the requested component's value.</returns>
-        public static object GetStyleValue(string ID)
+        /// <param name="ID">A style resource ID.</param>
+        /// <returns>The style object with the given ID.</returns>
+        /// <exception cref="KeyNotFoundException">When a style resource with the given key cannot be found.</exception>
+        public static object GetStyle(string ID)
         {
-            return Application.Current.FindResource(new ComponentResourceKey(typeof(Styles), ID));
+            try
+            {
+                return Application.Current.FindResource(new ComponentResourceKey(typeof(Styles), ID));
+            }
+            catch
+            {
+                throw new Exception($"[{nameof(StyleManager)}.{nameof(GetStyle)}]" +
+                                    $"The style resource with ID {ID} cannot be resolved.");
+            }
         }
 
         /// <summary>
-        /// Gets the specified brush from the current application runtime resources.
+        /// Gets the given brush from the current application runtime resources.
         /// </summary>
-        /// <param name="ID">A constant string defined in the <see cref="Styles"/> class specifying the brush to get.</param>
-        /// <returns></returns>
-        public static Brush Brush(string ID)
+        /// <param name="ID">The brush ID.</param>
+        /// <returns>The <see cref="System.Windows.Media.Brush"/> with the given ID.</returns>
+        public static Brush Brush(XLBrushes ID)
         {
-            //if (!IsInDesignMode)
-            //{
-            //    // Check if user color is saved in config
-            //    string configColor = Config<StyleConfig>.GetProperty(ID);
-
-            //    if (configColor != null && configColor != string.Empty)
-            //    {
-            //        if (TypeDescriptor.GetConverter(typeof(Color)).IsValid(configColor))
-            //        {
-            //            Color color = (Color)ColorConverter.ConvertFromString(configColor);
-
-            //            // Return user brush
-            //            return new SolidColorBrush(color);
-            //        }
-            //    }
-            //}
-            return (Brush)GetStyleValue(ID);
-            //return (Brush)Application.Current.FindResource(new ComponentResourceKey(typeof(Styles), ID));
+            return (Brush)GetStyle($"{ID}Brush");
         }
 
         /// <summary>
-        /// Gets the specified color from the current application runtime resources.
+        /// Gets the value of the given layout property from the current application runtime resources.
         /// </summary>
-        /// <param name="ID">A constant string defined in the <see cref="Styles"/> class specifying the color to get.</param>
-        /// <returns></returns>
-        public static Color GetColor(string ID)
+        /// <param name="ID">The ID of the layout property.</param>
+        /// <returns>The value of the layout property with the given ID.</returns>
+        public static object GetLayoutValue(XLLayout ID)
         {
-            //if (!IsInDesignMode)
-            //{
-            //    // Check if user color is saved in config
-            //    string configColor = Config<StyleConfig>.GetProperty(ID);
-
-            //    if (configColor != null && configColor != string.Empty)
-            //    {
-            //        if (TypeDescriptor.GetConverter(typeof(Color)).IsValid(configColor))
-            //        {
-            //            Color color = (Color)ColorConverter.ConvertFromString(configColor);
-
-            //            // Return user color
-            //            return color;
-            //        }
-            //    }
-            //}
-
-            return (Color)GetStyleValue(ID);
-            //return (Color)Application.Current.FindResource(new ComponentResourceKey(typeof(Styles), ID));
+            return GetStyle($"{ID}");
         }
 
         /// <summary>
-        /// Sets the specified color to override the style manager defaults.
+        /// Applies the currently selected theme.
         /// </summary>
-        /// <param name="ID">A constant string defined in the <see cref="Styles"/> class specifying the color to override.</param>
-        /// <param name="color">The color to set.</param>
-        public static void SetColor(string ID, Color color)
-        {
-            //if (!IsInDesignMode)
-            //{
-            //    Config<StyleConfig>.SetProperty(ID, color.ToString());
-
-            //    StyleChanged?.Invoke(null, EventArgs.Empty);
-            //}
-        }
-
-        /// <summary>
-        /// Clears the specified color override.
-        /// </summary>
-        /// <param name="ID">A constant string defined in the <see cref="Styles"/> class specifying the color to override.</param>
-        public static void ClearColor(string ID)
-        {
-            //if (!IsInDesignMode)
-            //{
-            //    Config<StyleConfig>.SetProperty(ID, null);
-
-            //    StyleChanged?.Invoke(null, EventArgs.Empty);
-            //}
-        }
-
-        /// <summary>
-        /// Applies the currently selected skin.
-        /// </summary>
-        private static void ApplySkinStyle()
+        private static void ApplyTheme()
         {
             Collection<ResourceDictionary> dictionaries = Application.Current.Resources.MergedDictionaries;
 
-            dictionaries.Remove(_CurrentStyle);
+            // REMOVE THE APPLIED THEME DICTIONARY
+            dictionaries.Remove(_CurrentTheme);
 
-            _CurrentStyle.Source = new Uri(string.Format(_StylesUri, Style), UriKind.Relative);
+            _CurrentTheme.Source = new Uri(string.Format(_ThemesURI, Theme), UriKind.Relative);
             
-            dictionaries.Add(_CurrentStyle);
+            // MERGE THE NEW THEME DICTIONARY INTO THE APPLICATION DICTIONARY
+            dictionaries.Add(_CurrentTheme);
 
-            // Raise the style changed event
             StyleChanged?.Invoke(null, EventArgs.Empty);
         }
 
         /// <summary>
-        /// Applies the currently selected appearance.
+        /// Applies the currently selected layout options.
         /// </summary>
-        private static void ApplyAppearance()
+        private static void ApplyLayoutOptions()
         {
             Collection<ResourceDictionary> dictionaries = Application.Current.Resources.MergedDictionaries;
 
-            Array appearances = Enum.GetValues(typeof(ControlAppearance));
+            Array options = Enum.GetValues(typeof(XLLayoutOptions));
 
-            // Remove all current appearance dictionaries
-            foreach (ResourceDictionary dictionary in _CurrentAppearances)
+            // REMOVE ALL APPLIED LAYOUT DICTIONARIES
+            foreach (var dictionary in _CurrentLayoutOptions)
             {
                 dictionaries.Remove(dictionary);
             }
 
-            _CurrentAppearances.Clear();
+            _CurrentLayoutOptions.Clear();
 
-            // Create a resource dictionary for each control appearance flag
-            foreach (ControlAppearance appearance in appearances)
+            // CREATE A DICTIONARY FOR EACH FLAGGED LAYOUT
+            foreach (XLLayoutOptions option in options)
             {
-                if ((_Appearance & appearance) == appearance)
+                if ((_Layout & option) == option)
                 {
-                    switch (appearance)
+                    switch (option)
                     {
-                        case ControlAppearance.Flat:
-                            _CurrentAppearances.Add(new ResourceDictionary() { Source = new Uri(string.Format(_AppearancesUri, ControlAppearance.Flat), UriKind.Relative) });
+                        case XLLayoutOptions.Flat:
+                            _CurrentLayoutOptions.Add(new ResourceDictionary() { Source = new Uri(string.Format(_AppearancesURI, XLLayoutOptions.Flat), UriKind.Relative) });
                             break;
-                        case ControlAppearance.Default:
-                            _CurrentAppearances.Add(new ResourceDictionary() { Source = new Uri(string.Format(_AppearancesUri, ControlAppearance.Default), UriKind.Relative) });
+                        case XLLayoutOptions.Default:
+                            _CurrentLayoutOptions.Add(new ResourceDictionary() { Source = new Uri(string.Format(_AppearancesURI, XLLayoutOptions.Default), UriKind.Relative) });
                             break;
-                        case ControlAppearance.Strong:
-                            _CurrentAppearances.Add(new ResourceDictionary() { Source = new Uri(string.Format(_AppearancesUri, ControlAppearance.Strong), UriKind.Relative) });
+                        case XLLayoutOptions.Strong:
+                            _CurrentLayoutOptions.Add(new ResourceDictionary() { Source = new Uri(string.Format(_AppearancesURI, XLLayoutOptions.Strong), UriKind.Relative) });
                             break;
-                        case ControlAppearance.Rounded:
-                            _CurrentAppearances.Add(new ResourceDictionary() { Source = new Uri(string.Format(_AppearancesUri, ControlAppearance.Rounded), UriKind.Relative) });
+                        case XLLayoutOptions.Rounded:
+                            _CurrentLayoutOptions.Add(new ResourceDictionary() { Source = new Uri(string.Format(_AppearancesURI, XLLayoutOptions.Rounded), UriKind.Relative) });
                             break;
                     }
                 }
             }
 
-            // Add all dictionaries to the application's merged dictionaries
-            foreach (ResourceDictionary dictionary in _CurrentAppearances)
+            // MERGE THE LAYOUT DICTIONARIES INTO THE APPLICATION DICTIONARY
+            foreach (var dictionary in _CurrentLayoutOptions)
             {
                 dictionaries.Add(dictionary);
             }
 
-            // Raise the appearance changed event
-            AppearanceChanged?.Invoke(null, EventArgs.Empty);
+            StyleChanged?.Invoke(null, EventArgs.Empty);
+        }
+
+
+        /// <summary>
+        /// Gets a <see cref="StyleManager"/> controlled style for the given control type.
+        /// </summary>
+        /// <param name="controltype">The type of control.</param>
+        /// <returns>A <see cref="Theme"/> for the control that is controlled by the <see cref="StyleManager"/>.</returns>
+        /// <exception cref="NotImplementedException">When the style for the given control is not implemented.</exception>
+        private static Style GetControlStyle(Type controltype)
+        {
+            try
+            {
+                return (Style)Application.Current.FindResource(new ComponentResourceKey(typeof(Styles), controltype.Name));
+            }
+            catch (Exception ex)
+            {
+                throw new NotImplementedException($"[{nameof(StyleManager)}.{nameof(GetControlStyle)}]" +
+                                                  $"A style for {controltype.Name} is not implemented.", ex);
+            }
         }
 
         /// <summary>
-        /// Invalidates the current appearance by removing colliding appearances.
+        /// Gets the <see cref="Color"/> from the given brush ID.
         /// </summary>
-        /// <remarks><i>Remove colliding appearances using XOR assignment operator.</i></remarks>
-        private static void InvalidateAppearance()
+        /// <param name="brushID">The brush to retreive the color from.</param>
+        /// <returns>The color from the given brush.</returns>
+        /// <exception cref="Exception">When the brush with the given ID is not found or is not a <see cref="SolidColorBrush"/>.</exception>
+        private static Color GetBrushColor(string brushID)
         {
-            // Strong overrides default
-            //if (_Appearance.HasFlag(ControlAppearance.Default) && _Appearance.HasFlag(ControlAppearance.Strong))
-            //{
-            //    // Toggle default off
-            //    _Appearance ^= ControlAppearance.Default;
-            //}
-
-            // Rounded overrides default
-            //if(_Appearance.HasFlag(ControlAppearance.Rounded))
-            //{
-            //    _Appearance ^= ControlAppearance.Default;
-            //}
+            try
+            {
+                return ((SolidColorBrush)Application.Current.FindResource(new ComponentResourceKey(typeof(Styles), brushID))).Color;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"[{nameof(StyleManager)}.{nameof(ProvideValue)}]" +
+                                    $"The color cannot be extracted from the {brushID}.", ex);
+            }
         }
 
         #endregion
 
-        #region Overrides
+        #region Overrides: DynamicResourceExtension
 
         /// <summary>
-        /// Implements the abstract <see cref="MarkupExtension.ProvideValue(IServiceProvider)"/> method to return the component resource specified by the <see cref="Key"/> property.
+        /// Assigns a dynamic resource to the bound property.
         /// </summary>
-        /// <param name="serviceProvider"></param>
-        /// <returns></returns>
-        public override object ProvideValue(IServiceProvider serviceProvider)
+        /// <param name="provider">The service provider providing services for the markup extension.</param>
+        /// <returns>The object to set on the property.</returns>
+        public override object ProvideValue(IServiceProvider provider)
         {
-          
-            return GetStyleValue(Key);
+            IProvideValueTarget targetprovider = (IProvideValueTarget)provider.GetService(typeof(IProvideValueTarget));
+
+            if (targetprovider.TargetObject is not DependencyObject targetobject)
+                return null;
+
+            if (targetprovider.TargetProperty is not DependencyProperty targetproperty)
+                return null;
+
+            // STYLE PROPERTY
+            if (targetproperty.PropertyType == typeof(Style))
+            {
+                return GetControlStyle(targetobject.GetType());
+            }
+
+            // COLOR PROPERTY
+            if(targetproperty.PropertyType == typeof(Color))
+            {
+                return GetBrushColor(_StyleResourceID);
+            }
+
+            // VALIDATE PROPERTY TYPE
+            if (targetproperty.PropertyType != _StylePropertyType)
+            {
+                throw new Exception($"[{nameof(StyleManager)}.{nameof(ProvideValue)}]" +
+                                    $"The {_StylePropertyType} cannot be set on a property of type {targetproperty.PropertyType}.");
+            }
+
+            return base.ProvideValue(provider);
         }
 
         #endregion
-
-        
     }
 }

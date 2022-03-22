@@ -1,0 +1,17 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Merges the specified dictionaries containing default styles into Themes\Generic.xaml -->
+    <ResourceDictionary.MergedDictionaries>
+
+        <!-- MERGE THE CONTROLS FOLDER FILES -->
+        <ResourceDictionary Source="pack://application:,,,/StylesXL;Component/Resources/Controls/TextBlock.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/StylesXL;Component/Resources/Controls/GroupBox.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/StylesXL;Component/Resources/Controls/Button.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/StylesXL;Component/Resources/Controls/ToggleButton.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/StylesXL;Component/Resources/Controls/TextBox.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/StylesXL;Component/Resources/Controls/Label.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/StylesXL;Component/Resources/Controls/ComboBox.xaml"/>
+
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

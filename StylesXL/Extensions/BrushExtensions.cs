@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
- 
+
 namespace StylesXL.Extensions
 {
     public enum FadeDirection
@@ -56,7 +52,7 @@ namespace StylesXL.Extensions
             factor = Math.Max(factor, 0);
 
             Color color = Color.FromArgb((byte)(factor * 255), brush.Color.R, brush.Color.G, brush.Color.B);
-
+            
             return new SolidColorBrush(color);
         }
 

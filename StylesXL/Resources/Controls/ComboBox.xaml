@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:xl="clr-namespace:StylesXL">
+
+    <Style x:Key="{ComponentResourceKey xl:Styles, ComboBox}" TargetType="{x:Type ComboBox}">
+        <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey xl:Styles, ControlBrush}}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {ComponentResourceKey xl:Styles, TextBrush}}"/>
+
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey xl:Styles, ControlHighlightBrush}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {ComponentResourceKey xl:Styles, BorderHighlightBrush}}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey xl:Styles, ControlDisabledBrush}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {ComponentResourceKey xl:Styles, BorderDisbabledBrush}}"/>
+                <Setter Property="Foreground" Value="{DynamicResource {ComponentResourceKey xl:Styles, TextDisabledBrush}}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="{ComponentResourceKey xl:Styles, ComboBoxItem}" TargetType="{x:Type ComboBoxItem}">
+        <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey xl:Styles, ControlBrush}}"/>
+        <Setter Property="Foreground" Value="{DynamicResource {ComponentResourceKey xl:Styles, TextBrush}}"/>
+    </Style>
+
+</ResourceDictionary>

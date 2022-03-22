@@ -1,0 +1,31 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:xl="clr-namespace:StylesXL">
+    
+    <Style x:Key="{ComponentResourceKey xl:Styles, ToggleButton}" TargetType="{x:Type ToggleButton}">
+
+        <Setter Property="Background"      Value="{DynamicResource {ComponentResourceKey xl:Styles, ControlBrush}}"/>
+        <Setter Property="Foreground"      Value="{DynamicResource {ComponentResourceKey xl:Styles, TextBrush}}"/>
+        <Setter Property="BorderBrush"     Value="{DynamicResource {ComponentResourceKey xl:Styles, BorderBrush}}"/>
+        <Setter Property="BorderThickness" Value="{DynamicResource {ComponentResourceKey xl:Styles, BorderThickness}}"/>
+
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey xl:Styles, ControlSelectedBrush}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {ComponentResourceKey xl:Styles, BorderSelectedBrush}}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey xl:Styles, ControlHighlightBrush}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {ComponentResourceKey xl:Styles, BorderHighlightBrush}}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey xl:Styles, ControlPressedBrush}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {ComponentResourceKey xl:Styles, BorderPressedBrush}}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey xl:Styles, ControlDisabledBrush}}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource {ComponentResourceKey xl:Styles, BorderDisbabledBrush}}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

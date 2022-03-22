@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:xl="clr-namespace:StylesXL">
+
+    <Style x:Key="{ComponentResourceKey xl:Styles, TextBlock}" TargetType="{x:Type TextBlock}">
+
+        <Setter Property="Background" Value="{xl:StyleManager BrushID=Transparent}"/>
+        <Setter Property="Foreground" Value="{xl:StyleManager BrushID=Text}"/>
+
+    </Style>
+
+</ResourceDictionary>

@@ -1,0 +1,51 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:xl="clr-namespace:StylesXL"
+                    xmlns:converters="clr-namespace:StylesXL.Converters">
+
+    <Style x:Key="{ComponentResourceKey xl:Styles, GroupBox}" TargetType="{x:Type GroupBox}">
+
+        <Setter Property="Background" Value="{xl:StyleManager BrushID=Transparent}"/>
+        <Setter Property="Foreground" Value="{xl:StyleManager BrushID=Text}"/>
+        <Setter Property="BorderBrush" Value="{xl:StyleManager BrushID=Border}"/>
+        <Setter Property="BorderThickness" Value="{xl:StyleManager LayoutID=BorderThickness}"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="GroupBox">
+                    <Grid>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        
+                        <Border Grid.Row="0"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="2,2,0,0">
+
+                            <ContentPresenter ContentSource="Header"
+                                              Margin="4"
+                                              RecognizesAccessKey="True"/>
+                        </Border>
+
+                        <Border Grid.Row="1"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1,0,1,1"
+                                CornerRadius="0,0,2,2">
+
+                            <ContentPresenter Margin="4" />
+                            
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
+</ResourceDictionary>

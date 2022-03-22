@@ -5,7 +5,7 @@
     <ResourceDictionary.MergedDictionaries>
 
         <!-- Merges the specified dictionaries containing custom control colors into Skins\Dark.xaml -->
-        <ResourceDictionary Source="pack://application:,,,/StylesXL;Component/Resources/Colors.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/StylesXL;Component/Resources/Colors/Generic.xaml"/>
 
     </ResourceDictionary.MergedDictionaries>
 
